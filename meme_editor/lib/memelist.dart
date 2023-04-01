@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:meme_editor/meme_editor.dart';
 import 'package:meme_editor/model/memejsonmodel.dart';
 import 'dart:convert';
 import 'dart:async';
@@ -16,6 +18,8 @@ class MemeList extends StatefulWidget {
 
 class _MemeList extends State<MemeList> {
   List<Meme> memes = [];
+  List<Meme> memesfilter = [];
+  TextEditingController controller = TextEditingController();
 
   Future<List<Meme>> _fetchMemes() async {
     final response =
@@ -31,6 +35,7 @@ class _MemeList extends State<MemeList> {
     _fetchMemes().then((value) {
       setState(() {
         memes = value;
+        memesfilter = value;
       });
     });
   }
@@ -54,26 +59,48 @@ class _MemeList extends State<MemeList> {
                 Color.fromRGBO(35, 47, 59, 1.0)
               ]))),
           title: const Text('Meme List', style: TextStyle(color: Colors.white)),
-          leading: GestureDetector(
-            child: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.white,
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
+          leading: GestureDetector(),
         ),
-        body: memes.isNotEmpty
-            ? MasonryGridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-                itemBuilder: (context, index) {
-                  return getWidget(memes[index]);
+        body: Column(
+          children: [
+            Container(
+              height: 50,
+              child: CupertinoSearchTextField(
+                controller: controller,
+                onChanged: (String value) {
+                  List<Meme> tempList = [];
+                  for (int i = 0; i < memesfilter.length; i++) {
+                    var memesearch = memesfilter[i];
+                    if (memesearch.name.contains(value)) {
+                      tempList.add(memesearch);
+                    }
+                  }
+                  setState(() {
+                    memes = tempList;
+                  });
+                  print('The text has changed to: $value');
                 },
-              )
-            : CircularProgressIndicator(),
+                onSubmitted: (String value) {
+                  print('Submitted text: $value');
+                },
+              ),
+            ),
+            Expanded(
+              child: memes.isNotEmpty
+                  ? MasonryGridView.count(
+                      itemCount: memes.length,
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 4,
+                      crossAxisSpacing: 4,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return getWidget(memes[index]);
+                      },
+                    )
+                  : CircularProgressIndicator(),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -84,7 +111,12 @@ class _MemeList extends State<MemeList> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(4),
         child: GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) =>  MemeEditor(meme: memeItem)),
+  );
+          },
           child: Container(
               color: const Color(0xFFFFFFFF),
               child: Column(
