@@ -1,15 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
-
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:meme_editor/model/memejsonmodel.dart';
 import 'dart:convert';
 import 'dart:async';
-
-// import 'package:movielist/movielistitem.dart';
-
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class MemeList extends StatefulWidget {
   const MemeList({super.key});
@@ -22,12 +18,13 @@ class _MemeList extends State<MemeList> {
   List<Meme> memes = [];
 
   Future<List<Meme>> _fetchMemes() async {
-    final response = await http.get(Uri.parse('https://api.imgflip.com/get_memes'));
+    final response =
+        await http.get(Uri.parse('https://api.imgflip.com/get_memes'));
     final data = jsonDecode(response.body);
     final memeJsonModel = MemeJsonModel.fromJson(data);
     return memeJsonModel.data.memes;
   }
-  
+
   @override
   void initState() {
     super.initState();
@@ -67,19 +64,51 @@ class _MemeList extends State<MemeList> {
             },
           ),
         ),
-        body: ListView.builder(
-        itemCount: memes.length,
-        itemBuilder: (BuildContext context, int index) {
-          final meme = memes[index];
-          return ListTile(
-            leading: Image.network(meme.url),
-            title: Text(meme.name),
-          );
-        },
+        body: memes.isNotEmpty
+            ? MasonryGridView.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                itemBuilder: (context, index) {
+                  return getWidget(memes[index]);
+                },
+              )
+            : CircularProgressIndicator(),
       ),
-    )
-      
-      
+    );
+  }
+
+  Widget getWidget(Meme memeItem) {
+    return Card(
+      elevation: 20,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: GestureDetector(
+          onTap: () {},
+          child: Container(
+              color: const Color(0xFFFFFFFF),
+              child: Column(
+                children: [
+                  Center(
+                    child: Image.network(
+                      memeItem.url,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: Text(memeItem.name,
+                          style: const TextStyle(
+                              color: Color.fromRGBO(102, 119, 139, 1.0),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                  ),
+                ],
+              )),
+        ),
+      ),
     );
   }
 }
