@@ -3,6 +3,7 @@
 //     final memeJsonModel = memeJsonModelFromJson(jsonString);
 
 import 'dart:convert';
+import 'dart:io';
 
 MemeJsonModel memeJsonModelFromJson(String str) => MemeJsonModel.fromJson(json.decode(str));
 
@@ -53,6 +54,7 @@ class Meme {
         required this.height,
         required this.boxCount,
         required this.captions,
+        required this.file
     });
 
     String id;
@@ -62,6 +64,7 @@ class Meme {
     int height;
     int boxCount;
     int captions;
+    File? file;
 
     factory Meme.fromJson(Map<String, dynamic> json) => Meme(
         id: json["id"],
@@ -70,7 +73,7 @@ class Meme {
         width: json["width"],
         height: json["height"],
         boxCount: json["box_count"],
-        captions: json["captions"],
+        captions: json["captions"], file: null,
     );
 
     Map<String, dynamic> toJson() => {

@@ -1,9 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:meme_editor/model/memejsonmodel.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+
 import 'dart:async';
 
 import 'package:path_provider/path_provider.dart';
@@ -16,6 +21,8 @@ class MemeEditor extends StatefulWidget {
 }
 
 class _MemeEditor extends State<MemeEditor> {
+  File? _croppedImage;
+
   @override
   void initState() {
     super.initState();
@@ -62,33 +69,60 @@ class _MemeEditor extends State<MemeEditor> {
                 ),
               ),
             ),
+             SizedBox(height: MediaQuery.of(context).size.width * 0.10),
             Center(
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      // backgroundColor: const Colors.red,
-                      ),
-                  onPressed: () {},
-                  child: const Text('Crop'),
+                 SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                Expanded(
+                  child: ElevatedButton(
+                    style:  ElevatedButton.styleFrom(
+            primary: Colors.blue,
+            onPrimary: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 16),
+          ),
+                    onPressed: () {},
+                    child: const Text('Crop'),
+                  ),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      // backgroundColor: const Colors.red,
-                      ),
-                  onPressed: () {},
-                  child: const Text('Rotate'),
+                 SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+            primary: Colors.blue,
+            onPrimary: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 16),
+          ),
+                    onPressed: () {},
+                    child: const Text('Rotate'),
+                  ),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      // backgroundColor: const Colors.red,
-                      ),
-                  onPressed: () {
+                 SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                Expanded(
+                  child: ElevatedButton(
+                    style:  ElevatedButton.styleFrom(
+            primary: Colors.blue,
+            onPrimary: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 16),
+          ),
+                    onPressed: () {
 
-                    _saveNetworkImage();
-                  },
-                  child: const Text('Save'),
+                      _saveNetworkImage();
+                    },
+                    child: const Text('Save'),
+                  ),
                 ),
+                 SizedBox(width: MediaQuery.of(context).size.width * 0.05),
               ],
             )),
           ],
