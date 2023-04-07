@@ -1,9 +1,13 @@
 // ignore_for_file: prefer_const_constructors
-
+//Meme_Editor
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:meme_editor/model/memejsonmodel.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -21,11 +25,13 @@ class MemeEditor extends StatefulWidget {
 }
 
 class _MemeEditor extends State<MemeEditor> {
-  File? _croppedImage;
+  
+  
 
   @override
   void initState() {
     super.initState();
+    
   }
 
   @override
@@ -58,73 +64,96 @@ class _MemeEditor extends State<MemeEditor> {
               },
             )),
         body: Column(
-         
           children: [
             Center(
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.5,
-                child: Image.network(
-                  widget.meme.url,
-                  fit: BoxFit.fill,
-                ),
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  child:
+                  // Image.network(
+                  //   widget.meme.url,
+                  //   fit: BoxFit.fill,
+                  // )
+                  CachedNetworkImage(
+    imageUrl: widget.meme.url,
+    placeholder: (context, url) => CircularProgressIndicator(),
+    errorWidget: (context, url, error) => Icon(Icons.error),
+    cacheManager: CacheManager(
+        Config(
+          "fluttercampus",
+          stalePeriod: const Duration(days: 7),
+          //one week cache period
+        )
+    ),
+)
+                  ),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.width * 0.10),
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        onPrimary: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: () {
+                        String tempImage = widget.meme.url ;
+                       _croppedImage(tempImage);
+                       
+                       
+                      },
+                      child: const Text('Crop'),
+                    ),
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        onPrimary: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: () {
+                        
+                      int  suba= 10;
+                      int subb=39;
+                      var result= subtract(suba, subb);
+                        print(result);
+                      },
+                      child: const Text('Rotate'),
+                    ),
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        onPrimary: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: () {
+                         _saveNetworkImage();
+                      },
+                      child: const Text('Save'),
+                    ),
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                ],
               ),
             ),
-             SizedBox(height: MediaQuery.of(context).size.width * 0.10),
-            Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                 SizedBox(width: MediaQuery.of(context).size.width * 0.05),
-                Expanded(
-                  child: ElevatedButton(
-                    style:  ElevatedButton.styleFrom(
-            primary: Colors.blue,
-            onPrimary: Colors.black,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            padding: EdgeInsets.symmetric(vertical: 16),
-          ),
-                    onPressed: () {},
-                    child: const Text('Crop'),
-                  ),
-                ),
-                 SizedBox(width: MediaQuery.of(context).size.width * 0.05),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-            primary: Colors.blue,
-            onPrimary: Colors.black,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            padding: EdgeInsets.symmetric(vertical: 16),
-          ),
-                    onPressed: () {},
-                    child: const Text('Rotate'),
-                  ),
-                ),
-                 SizedBox(width: MediaQuery.of(context).size.width * 0.05),
-                Expanded(
-                  child: ElevatedButton(
-                    style:  ElevatedButton.styleFrom(
-            primary: Colors.blue,
-            onPrimary: Colors.black,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            padding: EdgeInsets.symmetric(vertical: 16),
-          ),
-                    onPressed: () {
-
-                      _saveNetworkImage();
-                    },
-                    child: const Text('Save'),
-                  ),
-                ),
-                 SizedBox(width: MediaQuery.of(context).size.width * 0.05),
-              ],
-            )),
           ],
         ),
       ),
@@ -132,11 +161,11 @@ class _MemeEditor extends State<MemeEditor> {
   }
 
   void _saveNetworkImage() async {
-    String url =  widget.meme.url;
+    String url = widget.meme.url;
     final tempDir = await getTemporaryDirectory();
-    final path  = '${tempDir.path}/Image.jpg';
+    final path = '${tempDir.path}/Image.jpg';
     await Dio().download(url, path);
-   await  GallerySaver.saveImage(path).then((success) {
+    await GallerySaver.saveImage(path).then((success) {
       setState(() {
         if (success == true) {
           const snackBar = SnackBar(
@@ -159,4 +188,54 @@ class _MemeEditor extends State<MemeEditor> {
       });
     });
   }
+ int subtract(int a,int b){
+  
+  int minus= a-b;
+  // print(sum);
+  return minus;
+ }
+
+  Future<Null> _croppedImage(String imageUrl) async {
+// final String fileName = 'Image/IMG_20210913_164405.jpg'; // Replace with your image file name
+// final ByteData data = await rootBundle.load('assets/$fileName');
+// final Directory appDocumentsDirectory = await getApplicationDocumentsDirectory();
+// final String filePath = '${appDocumentsDirectory.path}/$fileName';
+// final File file = File(filePath);
+// await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
+// final String absolutePath = file.path;
+    // final manifestJson = await DefaultAssetBundle.of(context).loadString(widget.meme.url);
+    var imageFile =
+        await DefaultCacheManager().getImageFile(imageUrl);
+    
+   var croppedFile = (await ImageCropper().cropImage(
+      sourcePath: imageFile.toString(),
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ],
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        IOSUiSettings(
+          title: 'Cropper',
+        ),
+        WebUiSettings(
+          context: context,
+        ),
+      ],
+    )) ;
+    
+
+  }
+
+ 
+
+
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meme_editor/login_page.dart';
 import 'package:meme_editor/memelist.dart';
 
 void main() => runApp(const MainApp());
@@ -11,7 +12,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: MemeList(),   //type your page name here
+      home: LoginPage(),   //type your page name here
       debugShowCheckedModeBanner: false,
     );
   }
