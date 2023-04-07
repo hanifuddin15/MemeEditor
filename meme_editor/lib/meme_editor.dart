@@ -196,14 +196,6 @@ class _MemeEditor extends State<MemeEditor> {
  }
 
   Future<Null> _croppedImage(String imageUrl) async {
-// final String fileName = 'Image/IMG_20210913_164405.jpg'; // Replace with your image file name
-// final ByteData data = await rootBundle.load('assets/$fileName');
-// final Directory appDocumentsDirectory = await getApplicationDocumentsDirectory();
-// final String filePath = '${appDocumentsDirectory.path}/$fileName';
-// final File file = File(filePath);
-// await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
-// final String absolutePath = file.path;
-    // final manifestJson = await DefaultAssetBundle.of(context).loadString(widget.meme.url);
     var imageFile =
         await DefaultCacheManager().getImageFile(imageUrl);
     

@@ -129,7 +129,7 @@ class _MemeList extends State<MemeList> {
                   ),
                   Center(
                     child: Container(
-                      padding: EdgeInsets.all(10),
+                      // padding: EdgeInsets.all(10),
                       child: Text(memeItem.name,
                           style: const TextStyle(
                               color: Color.fromRGBO(102, 119, 139, 1.0),

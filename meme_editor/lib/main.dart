@@ -12,7 +12,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: LoginPage(),   //type your page name here
+      home: MemeList(),   //type your page name here
       debugShowCheckedModeBanner: false,
     );
   }
